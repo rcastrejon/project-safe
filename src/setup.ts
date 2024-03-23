@@ -16,6 +16,8 @@ const loggerConfig =
       }
     : { level: env.LOG_LEVEL };
 
+// The global setup plugin that setups the console logger. It should be used as
+// the first plugin in the main Elysia instance.
 export const setup = new Elysia({ name: "Global.Setup" }).use(
   logger(loggerConfig),
 );
