@@ -1,11 +1,23 @@
 {
   "name": "rest-api",
-  "module": "index.ts",
+  "private": "true",
+  "module": "src/index.ts",
   "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "check": "biome check ./src",
+    "check:apply": "biome check --apply ./src",
+    "format": "biome format ./src",
+    "lint": "biome lint ./src"
+  },
   "devDependencies": {
+    "@biomejs/biome": "1.6.2",
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "elysia": "^1.0.7"
   }
 }
