@@ -8,7 +8,8 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "noUnusedVariables": "warn"
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn"
       },
       "complexity": {
         "noStaticOnlyClass": "off"

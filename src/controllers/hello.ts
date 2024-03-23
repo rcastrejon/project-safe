@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 
 import { helloModel } from "../models/hello";
 import { HelloService } from "../services/hello";
