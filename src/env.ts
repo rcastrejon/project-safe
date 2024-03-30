@@ -5,6 +5,7 @@ const envSchema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
+  DATABASE_URL: z.string().url(),
 });
 
 export const env = envSchema.parse(process.env);

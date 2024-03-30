@@ -7,20 +7,24 @@
     "dev": "bun run --watch src/index.ts",
     "check": "biome check ./src",
     "check:apply": "biome check --apply ./src",
-    "format": "biome format ./src",
-    "lint": "biome lint ./src"
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.2",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.20.14",
+    "pg": "^8.11.4"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.19",
+    "drizzle-orm": "^0.30.6",
     "elysia": "^1.0.7",
     "pino-pretty": "^11.0.0",
+    "postgres": "^3.4.4",
     "zod": "^3.22.4"
   }
 }
