@@ -15,6 +15,8 @@ The script will create a new database container and start it. You will be asked 
 
 After running the script, a backup of the original `.env` file will be created, just in case you need to restore it. Don't forget to remove the backup file before committing your changes.
 
+Finally, to setup the database schema, run the following command: `bun run db:push` while the database is running (You have to run this command every time you make a change to the database schema).
+
 To install dependencies:
 
 ```bash
