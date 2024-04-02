@@ -1,5 +1,13 @@
-import { pgTable, varchar, timestamp, integer, boolean, doublePrecision, text } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import {
+  boolean,
+  doublePrecision,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: varchar("id", { length: 256 }).primaryKey(),
@@ -37,8 +45,12 @@ export const driverTable = pgTable("driver", {
 
 export const assignmentTable = pgTable("assignment", {
   id: varchar("id", { length: 256 }).primaryKey(),
-  vehicleId: varchar("vehicle_id", { length: 256 }).notNull().references(()=>vehicleTable.id),
-  driverId: varchar("driver_id", { length: 256 }).notNull().references(()=>driverTable.id),
+  vehicleId: varchar("vehicle_id", { length: 256 })
+    .notNull()
+    .references(() => vehicleTable.id),
+  driverId: varchar("driver_id", { length: 256 })
+    .notNull()
+    .references(() => driverTable.id),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date"),
   isActive: boolean("is_active").notNull().default(true),
@@ -46,7 +58,9 @@ export const assignmentTable = pgTable("assignment", {
 
 export const routeTable = pgTable("route", {
   id: varchar("id", { length: 256 }).primaryKey(),
-  assignmentId: varchar("assignment_id", { length: 256 }).notNull().references(()=>assignmentTable.id),
+  assignmentId: varchar("assignment_id", { length: 256 })
+    .notNull()
+    .references(() => assignmentTable.id),
   startLongitude: doublePrecision("start_longitude").notNull(),
   startLatitude: doublePrecision("start_latitude").notNull(),
   endLongitude: doublePrecision("end_longitude").notNull(),
@@ -59,10 +73,23 @@ export const routeTable = pgTable("route", {
   comments: text("comments"),
 });
 
-export const assignmentRelations = relations(assignmentTable, ({one})=>{return {
-  vehicle: one(vehicleTable, {fields: [assignmentTable.vehicleId], references: [vehicleTable.id]}),
-  driver: one(driverTable, {fields: [assignmentTable.driverId], references: [driverTable.id]}),
-}})
-export const routeRelations = relations(routeTable, ({one})=>{return {
-  assignment: one(assignmentTable, {fields: [routeTable.assignmentId], references: [assignmentTable.id]}),
-}})
+export const assignmentRelations = relations(assignmentTable, ({ one }) => {
+  return {
+    vehicle: one(vehicleTable, {
+      fields: [assignmentTable.vehicleId],
+      references: [vehicleTable.id],
+    }),
+    driver: one(driverTable, {
+      fields: [assignmentTable.driverId],
+      references: [driverTable.id],
+    }),
+  };
+});
+export const routeRelations = relations(routeTable, ({ one }) => {
+  return {
+    assignment: one(assignmentTable, {
+      fields: [routeTable.assignmentId],
+      references: [assignmentTable.id],
+    }),
+  };
+});
