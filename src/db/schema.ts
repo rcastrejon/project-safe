@@ -17,10 +17,12 @@ export const userTable = pgTable("user", {
 
 export const invitationTokenTable = pgTable("invitation_token", {
   id: varchar("id", { length: 256 }).primaryKey(),
-  token: varchar("token", { length: 256 }).notNull().unique(),
+  userId: varchar("user_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id),
 });
 
-//TODO: Add photo field
+// TODO: Add photo field
 export const vehicleTable = pgTable("vehicle", {
   id: varchar("id", { length: 256 }).primaryKey(),
   make: varchar("make", { length: 256 }).notNull(),
@@ -73,6 +75,18 @@ export const routeTable = pgTable("route", {
   comments: text("comments"),
 });
 
+export const invitationTokenRelations = relations(
+  invitationTokenTable,
+  ({ one }) => {
+    return {
+      user: one(userTable, {
+        fields: [invitationTokenTable.userId],
+        references: [userTable.id],
+      }),
+    };
+  },
+);
+
 export const assignmentRelations = relations(assignmentTable, ({ one }) => {
   return {
     vehicle: one(vehicleTable, {
@@ -85,6 +99,7 @@ export const assignmentRelations = relations(assignmentTable, ({ one }) => {
     }),
   };
 });
+
 export const routeRelations = relations(routeTable, ({ one }) => {
   return {
     assignment: one(assignmentTable, {
