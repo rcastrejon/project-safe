@@ -8,7 +8,8 @@ import { newId } from "../utils/ids";
 export abstract class InvitationTokenService {
     static async createInvitationToken(userId: string) {
         const tokenId = newId("invitationToken");
-    
+        console.log("tokenId: ", tokenId);
+        
         try {
         const insertedToken = await db.transaction(async (tx) => {
             const [insertedToken] = await tx
