@@ -2,7 +2,7 @@ import { DrizzleError, eq } from "drizzle-orm";
 import { Argon2id } from "oslo/password";
 
 import { db } from "../db";
-import { invitationTokenTable, invitationTokenRelations } from "../db/schema";
+import { invitationTokenTable } from "../db/schema";
 import { newId } from "../utils/ids";
 
 export abstract class InvitationTokenService {
@@ -45,7 +45,7 @@ export abstract class InvitationTokenService {
 
     static async deleteInvitationTokenById(id: string) {
         const deletedInvitationToken = await db.transaction(async (tx) => {
-            const invitationToken = await tx.query.userTable.findFirst({
+            const invitationToken = await tx.query.invitationTokenTable.findFirst({
               where: eq(invitationTokenTable.id, id),
               columns: {
                 id: true,
