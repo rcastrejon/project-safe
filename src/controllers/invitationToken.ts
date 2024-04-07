@@ -38,4 +38,12 @@ export const invitationTokenController = new Elysia({ prefix: "/invitationToken"
     {
       body: "invitationToken.create",
     },
+  )
+  .delete(
+    "/:id",
+    async ({ params: { id }, error }) => {
+      const deletedToken = await InvitationTokenService.deleteInvitationTokenById(id);
+      if (!deletedToken) return error(404, { error: "Token not found" });
+      return { id: deletedToken.id };
+    }
   );

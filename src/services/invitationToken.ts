@@ -43,4 +43,19 @@ export abstract class InvitationTokenService {
     static async getAllInvitationTokens() {
         return db.query.invitationTokenTable.findMany();
     }
+
+    static async deleteInvitationTokenById(id: string) {
+        const deletedInvitationToken = await db.transaction(async (tx) => {
+            const invitationToken = await tx.query.userTable.findFirst({
+              where: eq(invitationTokenTable.id, id),
+              columns: {
+                id: true,
+              },
+            });
+            if (!invitationToken) return undefined;
+            await tx.delete(invitationTokenTable).where(eq(invitationTokenTable.id, id));
+            return invitationToken;
+          });
+          return deletedInvitationToken;
+    }
 }
