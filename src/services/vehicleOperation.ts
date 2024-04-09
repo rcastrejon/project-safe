@@ -3,21 +3,20 @@ import { DrizzleError, eq } from "drizzle-orm";
 import { db } from "../db";
 import { vehicleTable } from "../db/schema";
 import { newId } from "../utils/ids";
-import { replaceUrlPath } from "elysia/utils";
 
 export abstract class VehicleService {
-  static async createVehicle( vehicleData: {
-    brand: string,
+  static async createVehicle(
+    _brand: string,
     model: string,
     vin: string,
-    plate: string,
+    licensePlate: string,
     purchaseDate: string,
     cost: number,
-    photo: string,
     registrationDate: string
-  }) {
-    const vehicleId = newId("vehicle");
-    const normalizedVin = vehicleData.vin.toUpperCase();
+  ) {
+    const normalizedVin = vin.toUpperCase();
+    const normalizedPurchaseDate: Date = new Date(purchaseDate);
+    const normalizedRegistrationDate: Date = new Date(registrationDate);
 
     try {
       const insertedVehicle = await db.transaction(async (tx) => {
@@ -31,19 +30,20 @@ export abstract class VehicleService {
 
         if (existingVehicle) return tx.rollback();
 
+        const vehicleId = newId("vehicle");
         const [insertedVehicle] = await tx
           .insert(vehicleTable)
           .values({
             id: vehicleId,
-            make: vehicleData.brand,
-            model: vehicleData.model,
+            make: _brand,
+            model,
             vin: normalizedVin,
-            cost: vehicleData.cost,
-            licensePlate: vehicleData.plate,
-            purchaseDate: vehicleData.purchaseDate,
-            registrationDate: vehicleData.registrationDate,
+            cost,
+            licensePlate,
+            purchaseDate: normalizedPurchaseDate,
+            registrationDate: normalizedRegistrationDate,
           })
-          .returning();
+        .returning();
 
         if (!insertedVehicle) return tx.rollback();
         return insertedVehicle;
@@ -60,8 +60,8 @@ export abstract class VehicleService {
 
   static async getVehicleById(id: string) {
     return db.query.vehicleTable.findFirst({
-      where: eq(vehicleTable.id, id)
-    })
+      where: eq(vehicleTable.id, id),
+    });
   }
 
   static async getAllVehicles() {

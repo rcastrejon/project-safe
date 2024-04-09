@@ -14,7 +14,7 @@ export const vehicleModel = new Elysia({ name: "Model.Vehicle "}).model({
             minLength: 1,
             maxLength: 256,
         }),
-        plate: t.String({
+        licensePlate: t.String({
             minLength: 1,
             maxLength: 256,
         }),
@@ -22,10 +22,6 @@ export const vehicleModel = new Elysia({ name: "Model.Vehicle "}).model({
             format: "date"
         }),
         cost: t.Number(),
-        photo: t.String({
-            minLength: 8,
-            maxLength: 256,
-        }),
         registrationDate: t.String({
             format: "date"
         }),
