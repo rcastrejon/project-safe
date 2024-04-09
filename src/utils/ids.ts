@@ -5,6 +5,7 @@ const prefixes = {
   driver: "driver",
   invitationToken: "invitationToken",
   vehicle: "vehicle",
+  assign: "assign",
   test: "test", // <-- for tests only
 } as const;
 
