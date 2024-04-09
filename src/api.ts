@@ -15,4 +15,6 @@ export const api = new Elysia()
   .use(helloController)
   .use(usersController)
   .use(invitationTokenController)
-  .use(assignController);
+  .use(assignController)
+  .use(vehiclesController)
+  .use(driversController);
