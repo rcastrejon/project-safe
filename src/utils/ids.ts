@@ -2,6 +2,7 @@ import { generateId } from "lucia";
 
 const prefixes = {
   user: "user",
+  driver: "driver",
   test: "test", // <-- for tests only
 } as const;
 
