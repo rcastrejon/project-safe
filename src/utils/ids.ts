@@ -3,6 +3,7 @@ import { generateId } from "lucia";
 const prefixes = {
   user: "user",
   invitationToken: "invitationToken",
+  vehicle: "vehicle",
   test: "test", // <-- for tests only
 } as const;
 
