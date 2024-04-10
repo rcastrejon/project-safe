@@ -3,9 +3,9 @@ import { generateId } from "lucia";
 const prefixes = {
   user: "user",
   driver: "driver",
-  invitationToken: "invitationToken",
-  vehicle: "vehicle",
-  assign: "assign",
+  invitation: "inv",
+  vehicle: "veh",
+  assignment: "assign",
   test: "test", // <-- for tests only
 } as const;
 

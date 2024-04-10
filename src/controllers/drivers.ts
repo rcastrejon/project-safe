@@ -1,47 +1,103 @@
 import { Elysia } from "elysia";
 
 import { driverModel } from "../models/driver";
-import { DriverService } from "../services/driverManagement";
+import { authService } from "../services/auth";
+import {
+  DriverNotFoundError,
+  DriverService,
+  InvalidDriverError,
+} from "../services/driver";
 
 export const driversController = new Elysia({ prefix: "/drivers" })
+  .use(authService)
   .use(driverModel)
+  // POST /drivers
   .post(
     "/",
-    async ({ body: { name, birthDate, curp, address, monthlySalary, licenseNumber, registrationDate }, error }) => {
-      const { driver, error: err } = await DriverService.createDriver(
-        name, birthDate, curp, address, monthlySalary, licenseNumber, registrationDate
-      );
-      if (err) return error(400, { error: err });
-      return { driver };
+    async ({ user, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const driver = await DriverService.createDriver(body);
+        return { driver };
+      } catch (e) {
+        if (e instanceof InvalidDriverError) {
+          return error(400, { error: e.message });
+        }
+      }
     },
     {
-      body: "driver.create", 
+      body: "driver.create",
+      transform({ body }) {
+        body.curp = body.curp?.toUpperCase();
+        body.licenseNumber = body.licenseNumber?.toUpperCase();
+      },
     },
   )
-  .get("/", async () => {
+  // GET /drivers
+  .get("/", async ({ user, error }) => {
+    if (!user) return error(401, { error: "Unauthorized" });
+
     const drivers = await DriverService.getAllDrivers();
     return { items: drivers };
   })
+  // GET /drivers/:id
   .get(
     "/:id",
-    async ({ params: { id }, error }) => {
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
       const driver = await DriverService.getDriverById(id);
       if (!driver) return error(404, { error: "Driver not found" });
       return { driver };
     },
     {
-      params: "driver.get", 
+      params: "driver.get",
     },
   )
-  .delete(
+  // PUT /drivers/:id
+  .put(
     "/:id",
-    async ({ params: { id }, error }) => {
-      const deletedDriver = await DriverService.deleteDriverById(id);
-      if (!deletedDriver) return error(404, { error: "Driver not found" });
-      return { id: deletedDriver.id };
+    async ({ user, params: { id }, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const driver = await DriverService.updateDriverById(id, body);
+        return { driver };
+      } catch (e) {
+        if (e instanceof InvalidDriverError) {
+          return error(400, { error: e.message });
+        }
+        if (e instanceof DriverNotFoundError) {
+          return error(404, { error: e.message });
+        }
+      }
     },
     {
-      params: "driver.get", 
+      body: "driver.create",
+      params: "driver.get",
+      transform({ body }) {
+        body.curp = body.curp?.toUpperCase();
+        body.licenseNumber = body.licenseNumber?.toUpperCase();
+      },
+    },
+  )
+  // DELETE /drivers/:id
+  .delete(
+    "/:id",
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const deletedId = await DriverService.deleteDriverById(id);
+        return { id: deletedId };
+      } catch (e) {
+        if (e instanceof DriverNotFoundError) {
+          return error(404, { error: "Driver not found" });
+        }
+      }
+    },
+    {
+      params: "driver.get",
     },
   );
-
