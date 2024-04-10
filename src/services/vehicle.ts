@@ -4,6 +4,7 @@ import { db } from "../db";
 import { vehicleTable } from "../db/schema";
 import { newId } from "../utils/ids";
 import type { MaybeQueryError } from "../utils/query-helpers";
+import { utapi } from "../utils/uploadthing";
 
 export class InvalidVehicleError extends Error {
   constructor() {
@@ -17,6 +18,12 @@ export class VehicleNotFoundError extends Error {
   }
 }
 
+export class FileUploadError extends Error {
+  constructor() {
+    super("File upload error");
+  }
+}
+
 export abstract class VehicleService {
   static async createVehicle(params: {
     make: string;
@@ -25,15 +32,27 @@ export abstract class VehicleService {
     licensePlate: string;
     purchaseDate: string;
     cost: number;
+    photo: File;
   }) {
     const vehicleId = newId("vehicle");
+
+    const [uploadedFile] = await utapi.uploadFiles([params.photo]);
+    if (!uploadedFile || !uploadedFile.data) {
+      throw new FileUploadError();
+    }
 
     try {
       const [insertedVehicle] = await db
         .insert(vehicleTable)
         .values({
           id: vehicleId,
-          ...params,
+          make: params.make,
+          model: params.model,
+          vin: params.vin,
+          licensePlate: params.licensePlate,
+          purchaseDate: params.purchaseDate,
+          cost: params.cost,
+          photoUrl: uploadedFile.data.url,
         })
         .returning();
       return insertedVehicle;

@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { vehicleModel } from "../models/vehicle";
 import { authService } from "../services/auth";
 import {
+  FileUploadError,
   InvalidVehicleError,
   VehicleNotFoundError,
   VehicleService,
@@ -24,9 +25,13 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
         if (e instanceof InvalidVehicleError) {
           return error(400, { error: e.message });
         }
+        if (e instanceof FileUploadError) {
+          return error(500, { error: e.message });
+        }
       }
     },
     {
+      type: "multipart/form-data",
       body: "vehicle.create",
       transform({ body }) {
         body.vin = body.vin?.toUpperCase();
@@ -73,7 +78,7 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
       }
     },
     {
-      body: "vehicle.create",
+      body: "vehicle.update",
       params: "vehicle.get",
       transform({ body }) {
         body.vin = body.vin?.toUpperCase();

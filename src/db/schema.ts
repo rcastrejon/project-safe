@@ -33,7 +33,6 @@ export const invitationTable = pgTable("invitation", {
     .references(() => userTable.id),
 });
 
-// TODO: Add photo field
 export const vehicleTable = pgTable("vehicle", {
   id: text("id").primaryKey(),
   make: text("make").notNull(),
@@ -42,6 +41,7 @@ export const vehicleTable = pgTable("vehicle", {
   cost: integer("cost").notNull(),
   licensePlate: text("license_plate").notNull().unique(),
   purchaseDate: date("purchase_date").notNull(),
+  photoUrl: text("photo_url").notNull(),
   registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
