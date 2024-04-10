@@ -6,6 +6,7 @@ const prefixes = {
   invitation: "inv",
   vehicle: "veh",
   assignment: "assign",
+  route: "route",
   test: "test", // <-- for tests only
 } as const;
 

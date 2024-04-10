@@ -5,6 +5,7 @@ import { driversController } from "./controllers/drivers";
 import { helloController } from "./controllers/hello";
 import { invitationsController } from "./controllers/invitations";
 import { registrationsController } from "./controllers/registrations";
+import { routesController } from "./controllers/routes";
 import { sessionsController } from "./controllers/sessions";
 import { usersController } from "./controllers/users";
 import { vehiclesController } from "./controllers/vehicles";
@@ -27,4 +28,5 @@ export const api = new Elysia()
   .use(invitationsController)
   .use(assignmentsController)
   .use(vehiclesController)
-  .use(driversController);
+  .use(driversController)
+  .use(routesController);
