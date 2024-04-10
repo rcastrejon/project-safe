@@ -33,12 +33,7 @@ export abstract class VehicleService {
         .insert(vehicleTable)
         .values({
           id: vehicleId,
-          make: params.make,
-          model: params.model,
-          vin: params.vin,
-          cost: params.cost,
-          licensePlate: params.licensePlate,
-          purchaseDate: params.purchaseDate,
+          ...params,
         })
         .returning();
       return insertedVehicle;
@@ -58,6 +53,35 @@ export abstract class VehicleService {
 
   static async getAllVehicles() {
     return await db.query.vehicleTable.findMany();
+  }
+
+  static async updateVehicleById(
+    id: string,
+    params: {
+      make: string;
+      model: string;
+      vin: string;
+      licensePlate: string;
+      purchaseDate: string;
+      cost: number;
+    },
+  ) {
+    try {
+      const [vehicle] = await db
+        .update(vehicleTable)
+        .set(params)
+        .where(eq(vehicleTable.id, id))
+        .returning();
+      if (!vehicle) {
+        throw new VehicleNotFoundError();
+      }
+      return vehicle;
+    } catch (e) {
+      if ((e as MaybeQueryError).code === "23505") {
+        throw new InvalidVehicleError();
+      }
+      throw e;
+    }
   }
 
   static async deleteVehicleById(id: string) {

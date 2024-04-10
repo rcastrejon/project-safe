@@ -22,6 +22,8 @@ export abstract class AssignmentService {
     vehicleId: string;
     driverId: string;
   }) {
+    // Create a new assignment, making sure that the vehicle and the driver
+    // have not been assigned to another (active) assignment yet
     const [existValidation, availabilityValidation] = await Promise.all([
       validateExists(params.vehicleId, params.driverId),
       validateAssignmentAvailability(params.vehicleId, params.driverId),
@@ -101,7 +103,7 @@ export abstract class AssignmentService {
 }
 
 async function validateExists(vehicleId: string, driverId: string) {
-  // Validar que el vehículo y el conductor existan
+  // Validate that the vehicle and the driver exist
   const existingVehicle = await db.query.vehicleTable.findFirst({
     where: eq(vehicleTable.id, vehicleId),
   });
@@ -115,6 +117,8 @@ async function validateAssignmentAvailability(
   vehicleId: string,
   driverId: string,
 ) {
+  // Validate that the assignment is not already active for the vehicle or the
+  // driver
   const foundAssignment = await db.query.assignmentTable.findFirst({
     where: or(
       and(

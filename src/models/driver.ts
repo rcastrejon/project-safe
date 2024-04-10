@@ -2,9 +2,7 @@ import { Elysia, t } from "elysia";
 
 export const driverModel = new Elysia({ name: "Model.Driver" }).model({
   "driver.create": t.Object({
-    name: t.String({
-      maxLength: 256,
-    }),
+    name: t.String(),
     birthDate: t.String({
       format: "date",
     }),
@@ -12,13 +10,9 @@ export const driverModel = new Elysia({ name: "Model.Driver" }).model({
       minLength: 18,
       maxLength: 18,
     }),
-    address: t.String({
-      maxLength: 256,
-    }),
-    monthlySalary: t.Number(),
-    licenseNumber: t.String({
-      maxLength: 256,
-    }),
+    address: t.String(),
+    monthlySalary: t.Integer(),
+    licenseNumber: t.String(),
   }),
   "driver.get": t.Object({
     id: t.String(),

@@ -31,12 +31,7 @@ export abstract class DriverService {
         .insert(driverTable)
         .values({
           id: driverId,
-          name: params.name,
-          birthDate: params.birthDate,
-          curp: params.curp,
-          address: params.address,
-          monthlySalary: params.monthlySalary,
-          licenseNumber: params.licenseNumber,
+          ...params,
         })
         .returning();
       return insertedDriver;
@@ -56,6 +51,35 @@ export abstract class DriverService {
 
   static async getAllDrivers() {
     return await db.query.driverTable.findMany();
+  }
+
+  static async updateDriverById(
+    id: string,
+    params: {
+      name: string;
+      birthDate: string;
+      curp: string;
+      address: string;
+      monthlySalary: number;
+      licenseNumber: string;
+    },
+  ) {
+    try {
+      const [driver] = await db
+        .update(driverTable)
+        .set(params)
+        .where(eq(driverTable.id, id))
+        .returning();
+      if (!driver) {
+        throw new DriverNotFoundError();
+      }
+      return driver;
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505") {
+        throw new InvalidDriverError();
+      }
+      throw e; // Unexpected error
+    }
   }
 
   static async deleteDriverById(id: string) {

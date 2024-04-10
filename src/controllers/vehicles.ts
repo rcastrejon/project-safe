@@ -55,6 +55,32 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
       params: "vehicle.get",
     },
   )
+  .put(
+    "/:id",
+    async ({ user, params: { id }, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const vehicle = await VehicleService.updateVehicleById(id, body);
+        return { vehicle };
+      } catch (e) {
+        if (e instanceof InvalidVehicleError) {
+          return error(400, { error: e.message });
+        }
+        if (e instanceof VehicleNotFoundError) {
+          return error(404, { error: e.message });
+        }
+      }
+    },
+    {
+      body: "vehicle.create",
+      params: "vehicle.get",
+      transform({ body }) {
+        body.vin = body.vin?.toUpperCase();
+        body.licensePlate = body.licensePlate?.toLocaleUpperCase();
+      },
+    },
+  )
   // DELETE /vehicles/:id
   .delete(
     "/:id",
