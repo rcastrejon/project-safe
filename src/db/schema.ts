@@ -113,6 +113,7 @@ export const assignmentRelations = relations(assignmentTable, ({ one }) => {
       fields: [assignmentTable.driverId],
       references: [driverTable.id],
     }),
+    routes: one(routeTable),
   };
 });
 
