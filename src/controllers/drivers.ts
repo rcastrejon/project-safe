@@ -7,15 +7,32 @@ export const driversController = new Elysia({ prefix: "/drivers" })
   .use(driverModel)
   .post(
     "/",
-    async ({ body: { name, birthDate, curp, address, monthlySalary, licenseNumber, registrationDate }, error }) => {
+    async ({
+      body: {
+        name,
+        birthDate,
+        curp,
+        address,
+        monthlySalary,
+        licenseNumber,
+        registrationDate,
+      },
+      error,
+    }) => {
       const { driver, error: err } = await DriverService.createDriver(
-        name, birthDate, curp, address, monthlySalary, licenseNumber, registrationDate
+        name,
+        birthDate,
+        curp,
+        address,
+        monthlySalary,
+        licenseNumber,
+        registrationDate,
       );
       if (err) return error(400, { error: err });
       return { driver };
     },
     {
-      body: "driver.create", 
+      body: "driver.create",
     },
   )
   .get("/", async () => {
@@ -30,7 +47,7 @@ export const driversController = new Elysia({ prefix: "/drivers" })
       return { driver };
     },
     {
-      params: "driver.get", 
+      params: "driver.get",
     },
   )
   .delete(
@@ -41,7 +58,6 @@ export const driversController = new Elysia({ prefix: "/drivers" })
       return { id: deletedDriver.id };
     },
     {
-      params: "driver.get", 
+      params: "driver.get",
     },
   );
-

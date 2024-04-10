@@ -16,7 +16,7 @@ export const assignController = new Elysia({ prefix: "/assign" })
         driverId,
         startDate,
         endDate,
-        isActive
+        isActive,
       );
       const assign = "assign" in result ? result.assign : null;
       const err = "error" in result ? result.error : null;
@@ -26,7 +26,7 @@ export const assignController = new Elysia({ prefix: "/assign" })
     },
     {
       body: "assign.create",
-    }
+    },
   )
   .get("/", async () => {
     const assigns = await AssignService.getAllAssigns();
@@ -41,7 +41,7 @@ export const assignController = new Elysia({ prefix: "/assign" })
     },
     {
       params: "assign.get",
-    }
+    },
   )
   .put(
     "/:id",
@@ -56,7 +56,7 @@ export const assignController = new Elysia({ prefix: "/assign" })
         driverId,
         startDate,
         endDate,
-        isActive
+        isActive,
       );
       const assign = "assign" in result ? result.assign : null;
       const err = "error" in result ? result.error : null;
@@ -67,5 +67,5 @@ export const assignController = new Elysia({ prefix: "/assign" })
     {
       body: "assign.create",
       params: "assign.get",
-    }
+    },
   );

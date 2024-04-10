@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
 
-import { helloController } from "./controllers/hello";
-import { usersController } from "./controllers/users";
-import { invitationTokenController } from "./controllers/invitationToken";
 import { assignController } from "./controllers/assign";
-import { vehiclesController } from "./controllers/vehicles";
 import { driversController } from "./controllers/drivers";
+import { helloController } from "./controllers/hello";
+import { invitationTokenController } from "./controllers/invitationToken";
+import { usersController } from "./controllers/users";
+import { vehiclesController } from "./controllers/vehicles";
 
 // The API instance that uses the controllers we have created so far. Every
 // controller here will be mounted on the API instance.

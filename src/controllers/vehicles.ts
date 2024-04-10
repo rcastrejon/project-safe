@@ -7,16 +7,18 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
   .use(vehicleModel)
   .post(
     "/",
-    async ({ body: {
-      brand,
-      model,
-      vin,
-      licensePlate,
-      purchaseDate,
-      cost,
-      registrationDate
-    }, error }) => {
-
+    async ({
+      body: {
+        brand,
+        model,
+        vin,
+        licensePlate,
+        purchaseDate,
+        cost,
+        registrationDate,
+      },
+      error,
+    }) => {
       const { vehicle, error: err } = await VehicleService.createVehicle(
         brand,
         model,
@@ -24,42 +26,40 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
         licensePlate,
         purchaseDate,
         cost,
-        registrationDate
+        registrationDate,
       );
 
       if (err) return error(400, { error: err });
-      return { vehicle }
+      return { vehicle };
     },
     {
       body: "vehicle.create",
     },
   )
-  .get(
-    "/",
-    async () => {
-        const vehicles = await VehicleService.getAllVehicles();
-        return {items: vehicles};
-    }
-  )
+  .get("/", async () => {
+    const vehicles = await VehicleService.getAllVehicles();
+    return { items: vehicles };
+  })
   .get(
     "/:id",
-    async ({params: { id }, error}) => {
-        const vehicle = await VehicleService.getVehicleById(id);
-        if (!vehicle) return error(404, { error: "Vehicle not found" });
-        return { vehicle };
+    async ({ params: { id }, error }) => {
+      const vehicle = await VehicleService.getVehicleById(id);
+      if (!vehicle) return error(404, { error: "Vehicle not found" });
+      return { vehicle };
     },
     {
-        params: "vehicle.get",
+      params: "vehicle.get",
     },
   )
   .delete(
     "/:id",
-    async ({params: {id}, error}) => {
-        const deletedVehicle = await VehicleService.deleteVehicleById(id);
-        if (!deletedVehicle) return error(404, {error: "Vehicle cannot be deleted, not found"});
-        return { id: deletedVehicle.id};
+    async ({ params: { id }, error }) => {
+      const deletedVehicle = await VehicleService.deleteVehicleById(id);
+      if (!deletedVehicle)
+        return error(404, { error: "Vehicle cannot be deleted, not found" });
+      return { id: deletedVehicle.id };
     },
     {
-        params: "vehicle.get",
-    }
+      params: "vehicle.get",
+    },
   );

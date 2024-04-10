@@ -12,7 +12,7 @@ export abstract class VehicleService {
     licensePlate: string,
     purchaseDate: string,
     cost: number,
-    registrationDate: string
+    registrationDate: string,
   ) {
     const normalizedVin = vin.toUpperCase();
     const normalizedPurchaseDate: Date = new Date(purchaseDate);
@@ -43,7 +43,7 @@ export abstract class VehicleService {
             purchaseDate: normalizedPurchaseDate,
             registrationDate: normalizedRegistrationDate,
           })
-        .returning();
+          .returning();
 
         if (!insertedVehicle) return tx.rollback();
         return insertedVehicle;

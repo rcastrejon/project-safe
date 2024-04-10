@@ -9,7 +9,7 @@ export abstract class AssignService {
     driverId: string,
     startDate: string,
     endDate: string,
-    isActive: boolean
+    isActive: boolean,
   ) {
     const assignId = newId("assign");
     const [existValidation, assignValidation] = await Promise.all([
@@ -63,7 +63,7 @@ export abstract class AssignService {
     driverId: string,
     startDate: string,
     endDate: string,
-    isActive: boolean
+    isActive: boolean,
   ) {
     const date_startDate: Date = new Date(startDate);
     const date_endDate: Date = new Date(endDate);
@@ -101,24 +101,22 @@ export abstract class AssignService {
 async function validateExist(vehicleId: string, driverId: string) {
   // Validar que el vehículo y el conductor existan
   try {
-    const [existingVehicle, existingDriver] = await db.transaction(
-      async (tx) => {
-        const existingVehicle = await tx.query.vehicleTable.findFirst({
-          where: eq(vehicleTable.id, vehicleId),
-          columns: {
-            id: true,
-          },
-        });
-        const existingDriver = await tx.query.driverTable.findFirst({
-          where: eq(driverTable.id, driverId),
-          columns: {
-            id: true,
-          },
-        });
-        if (!existingVehicle || !existingDriver) return tx.rollback();
-        return [existingVehicle, existingDriver];
-      }
-    );
+    await db.transaction(async (tx) => {
+      const existingVehicle = await tx.query.vehicleTable.findFirst({
+        where: eq(vehicleTable.id, vehicleId),
+        columns: {
+          id: true,
+        },
+      });
+      const existingDriver = await tx.query.driverTable.findFirst({
+        where: eq(driverTable.id, driverId),
+        columns: {
+          id: true,
+        },
+      });
+      if (!existingVehicle || !existingDriver) return tx.rollback();
+      return [existingVehicle, existingDriver];
+    });
   } catch (e) {
     if (e instanceof DrizzleError) {
       return { error: "Vehicle or driver not found" } as const;
@@ -137,8 +135,8 @@ async function validateAssign(vehicleId: string, driverId: string) {
     .where(
       and(
         eq(assignmentTable.driverId, driverId),
-        eq(assignmentTable.isActive, true)
-      )
+        eq(assignmentTable.isActive, true),
+      ),
     )
     .execute();
   if (existingAssign.length > 0)
@@ -151,8 +149,8 @@ async function validateAssign(vehicleId: string, driverId: string) {
     .where(
       and(
         eq(assignmentTable.vehicleId, vehicleId),
-        eq(assignmentTable.isActive, true)
-      )
+        eq(assignmentTable.isActive, true),
+      ),
     )
     .execute();
   if (existingAssign2.length > 0)

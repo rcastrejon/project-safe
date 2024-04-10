@@ -4,10 +4,18 @@ import { driverTable } from "../db/schema";
 import { newId } from "../utils/ids";
 
 export abstract class DriverService {
-  static async createDriver(name: string, birthDate: string, curp: string, address: string, monthlySalary: number, licenseNumber: string, registrationDate: string) {
+  static async createDriver(
+    name: string,
+    birthDate: string,
+    curp: string,
+    address: string,
+    monthlySalary: number,
+    licenseNumber: string,
+    registrationDate: string,
+  ) {
     // Validar si el CURP ya está en uso
-    const date_birthDate: Date = new Date(birthDate)
-    const date_registrationDate: Date = new Date(registrationDate)
+    const date_birthDate: Date = new Date(birthDate);
+    const date_registrationDate: Date = new Date(registrationDate);
     const normalizedCurp = curp.toUpperCase();
     const driverId = newId("driver");
 
@@ -30,7 +38,7 @@ export abstract class DriverService {
             address,
             monthlySalary,
             licenseNumber,
-            registrationDate: date_registrationDate
+            registrationDate: date_registrationDate,
           })
           .returning();
         if (!insertedDriver) return tx.rollback();
@@ -41,7 +49,7 @@ export abstract class DriverService {
       if (e instanceof DrizzleError) {
         return { error: "CURP already in use" } as const;
       }
-      throw e; 
+      throw e;
     }
   }
 
@@ -52,8 +60,7 @@ export abstract class DriverService {
   }
 
   static async getAllDrivers() {
-    return db.query.driverTable.findMany({
-    });
+    return db.query.driverTable.findMany({});
   }
 
   static async deleteDriverById(id: string) {
@@ -70,5 +77,4 @@ export abstract class DriverService {
     });
     return deletedDriver;
   }
-  
 }
