@@ -1,48 +1,52 @@
 import { Elysia } from "elysia";
 
 import { vehicleModel } from "../models/vehicle";
-import { VehicleService } from "../services/vehicleOperation";
+import { authService } from "../services/auth";
+import {
+  InvalidVehicleError,
+  VehicleNotFoundError,
+  VehicleService,
+} from "../services/vehicle";
 
 export const vehiclesController = new Elysia({ prefix: "/vehicles" })
+  .use(authService)
   .use(vehicleModel)
+  // POST /vehicles
   .post(
     "/",
-    async ({
-      body: {
-        brand,
-        model,
-        vin,
-        licensePlate,
-        purchaseDate,
-        cost,
-        registrationDate,
-      },
-      error,
-    }) => {
-      const { vehicle, error: err } = await VehicleService.createVehicle(
-        brand,
-        model,
-        vin,
-        licensePlate,
-        purchaseDate,
-        cost,
-        registrationDate,
-      );
+    async ({ user, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
 
-      if (err) return error(400, { error: err });
-      return { vehicle };
+      try {
+        const vehicle = await VehicleService.createVehicle(body);
+        return { vehicle };
+      } catch (e) {
+        if (e instanceof InvalidVehicleError) {
+          return error(400, { error: e.message });
+        }
+      }
     },
     {
       body: "vehicle.create",
+      transform({ body }) {
+        body.vin = body.vin?.toUpperCase();
+        body.licensePlate = body.licensePlate?.toLocaleUpperCase();
+      },
     },
   )
-  .get("/", async () => {
+  // GET /vehicles
+  .get("/", async ({ user, error }) => {
+    if (!user) return error(401, { error: "Unauthorized" });
+
     const vehicles = await VehicleService.getAllVehicles();
     return { items: vehicles };
   })
+  // GET /vehicles/:id
   .get(
     "/:id",
-    async ({ params: { id }, error }) => {
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
       const vehicle = await VehicleService.getVehicleById(id);
       if (!vehicle) return error(404, { error: "Vehicle not found" });
       return { vehicle };
@@ -51,13 +55,20 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
       params: "vehicle.get",
     },
   )
+  // DELETE /vehicles/:id
   .delete(
     "/:id",
-    async ({ params: { id }, error }) => {
-      const deletedVehicle = await VehicleService.deleteVehicleById(id);
-      if (!deletedVehicle)
-        return error(404, { error: "Vehicle cannot be deleted, not found" });
-      return { id: deletedVehicle.id };
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const deletedId = await VehicleService.deleteVehicleById(id);
+        return { id: deletedId };
+      } catch (e) {
+        if (e instanceof VehicleNotFoundError) {
+          return error(404, { error: e.message });
+        }
+      }
     },
     {
       params: "vehicle.get",

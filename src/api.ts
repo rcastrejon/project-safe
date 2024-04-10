@@ -1,9 +1,11 @@
 import { Elysia } from "elysia";
 
-import { assignController } from "./controllers/assign";
+import { assignmentsController } from "./controllers/assignments";
 import { driversController } from "./controllers/drivers";
 import { helloController } from "./controllers/hello";
-import { invitationTokenController } from "./controllers/invitationToken";
+import { invitationsController } from "./controllers/invitations";
+import { registrationsController } from "./controllers/registrations";
+import { sessionsController } from "./controllers/sessions";
 import { usersController } from "./controllers/users";
 import { vehiclesController } from "./controllers/vehicles";
 
@@ -12,9 +14,17 @@ import { vehiclesController } from "./controllers/vehicles";
 //
 // New controllers can be added by chaining the `.use` method.
 export const api = new Elysia()
+  .onError(({ code, error, set }) => {
+    if (code === "VALIDATION") {
+      set.headers["content-type"] = "application/json";
+      return error.message;
+    }
+  })
   .use(helloController)
+  .use(registrationsController)
+  .use(sessionsController)
   .use(usersController)
-  .use(invitationTokenController)
-  .use(assignController)
+  .use(invitationsController)
+  .use(assignmentsController)
   .use(vehiclesController)
   .use(driversController);

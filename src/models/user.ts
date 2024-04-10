@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 
 export const userModel = new Elysia({ name: "Model.User" }).model({
-  "user.create": t.Object({
+  "user.sign-up": t.Object({
     email: t.String({
       format: "email",
     }),
@@ -9,6 +9,11 @@ export const userModel = new Elysia({ name: "Model.User" }).model({
       minLength: 8,
       maxLength: 256,
     }),
+    invitation: t.String(),
+  }),
+  "user.sign-in": t.Object({
+    email: t.String(),
+    password: t.String(),
   }),
   "user.get": t.Object({
     id: t.String(),

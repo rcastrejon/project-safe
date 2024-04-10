@@ -1,47 +1,49 @@
 import { Elysia } from "elysia";
 
 import { driverModel } from "../models/driver";
-import { DriverService } from "../services/driverManagement";
+import { authService } from "../services/auth";
+import {
+  DriverNotFoundError,
+  DriverService,
+  InvalidDriverError,
+} from "../services/driver";
 
 export const driversController = new Elysia({ prefix: "/drivers" })
+  .use(authService)
   .use(driverModel)
   .post(
     "/",
-    async ({
-      body: {
-        name,
-        birthDate,
-        curp,
-        address,
-        monthlySalary,
-        licenseNumber,
-        registrationDate,
-      },
-      error,
-    }) => {
-      const { driver, error: err } = await DriverService.createDriver(
-        name,
-        birthDate,
-        curp,
-        address,
-        monthlySalary,
-        licenseNumber,
-        registrationDate,
-      );
-      if (err) return error(400, { error: err });
-      return { driver };
+    async ({ user, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const driver = await DriverService.createDriver(body);
+        return { driver };
+      } catch (e) {
+        if (e instanceof InvalidDriverError) {
+          return error(400, { error: e.message });
+        }
+      }
     },
     {
       body: "driver.create",
+      transform({ body }) {
+        body.curp = body.curp?.toUpperCase();
+        body.licenseNumber = body.licenseNumber?.toUpperCase();
+      },
     },
   )
-  .get("/", async () => {
+  .get("/", async ({ user, error }) => {
+    if (!user) return error(401, { error: "Unauthorized" });
+
     const drivers = await DriverService.getAllDrivers();
     return { items: drivers };
   })
   .get(
     "/:id",
-    async ({ params: { id }, error }) => {
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
       const driver = await DriverService.getDriverById(id);
       if (!driver) return error(404, { error: "Driver not found" });
       return { driver };
@@ -52,10 +54,17 @@ export const driversController = new Elysia({ prefix: "/drivers" })
   )
   .delete(
     "/:id",
-    async ({ params: { id }, error }) => {
-      const deletedDriver = await DriverService.deleteDriverById(id);
-      if (!deletedDriver) return error(404, { error: "Driver not found" });
-      return { id: deletedDriver.id };
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const deletedId = await DriverService.deleteDriverById(id);
+        return { id: deletedId };
+      } catch (e) {
+        if (e instanceof DriverNotFoundError) {
+          return error(404, { error: "Driver not found" });
+        }
+      }
     },
     {
       params: "driver.get",

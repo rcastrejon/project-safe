@@ -1,91 +1,107 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  doublePrecision,
+  date,
   integer,
+  numeric,
   pgTable,
   text,
   timestamp,
-  varchar,
 } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  email: varchar("email", { length: 256 }).notNull().unique(),
-  hashedPassword: varchar("hashed_password").notNull(),
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  hashedPassword: text("hashed_password").notNull(),
 });
 
-export const invitationTokenTable = pgTable("invitation_token", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  userId: varchar("user_id", { length: 256 })
+export const sessionTable = pgTable("session", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
+export const invitationTable = pgTable("invitation", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => userTable.id),
 });
 
 // TODO: Add photo field
 export const vehicleTable = pgTable("vehicle", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  make: varchar("make", { length: 256 }).notNull(),
-  model: varchar("model", { length: 256 }).notNull(),
-  vin: varchar("vin", { length: 256 }).notNull().unique(),
+  id: text("id").primaryKey(),
+  make: text("make").notNull(),
+  model: text("model").notNull(),
+  vin: text("vin").notNull().unique(),
   cost: integer("cost").notNull(),
-  licensePlate: varchar("license_plate", { length: 256 }).notNull().unique(),
-  purchaseDate: timestamp("purchase_date").notNull(),
-  registrationDate: timestamp("registration_date").notNull(),
+  licensePlate: text("license_plate").notNull().unique(),
+  purchaseDate: date("purchase_date").notNull(),
+  registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
 export const driverTable = pgTable("driver", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  birthDate: timestamp("birth_date").notNull(),
-  curp: varchar("curp", { length: 256 }).notNull().unique(),
-  address: varchar("address", { length: 256 }).notNull(),
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  birthDate: date("birth_date").notNull(),
+  curp: text("curp").notNull().unique(),
+  address: text("address").notNull(),
   monthlySalary: integer("monthly_salary").notNull(),
-  licenseNumber: varchar("license_number", { length: 256 }).notNull().unique(),
-  registrationDate: timestamp("registration_date").notNull(),
+  licenseNumber: text("license_number").notNull().unique(),
+  registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
 export const assignmentTable = pgTable("assignment", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  vehicleId: varchar("vehicle_id", { length: 256 })
+  id: text("id").primaryKey(),
+  vehicleId: text("vehicle_id")
     .notNull()
     .references(() => vehicleTable.id),
-  driverId: varchar("driver_id", { length: 256 })
+  driverId: text("driver_id")
     .notNull()
     .references(() => driverTable.id),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date"),
   isActive: boolean("is_active").notNull().default(true),
+  registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
 export const routeTable = pgTable("route", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  assignmentId: varchar("assignment_id", { length: 256 })
+  id: text("id").primaryKey(),
+  assignmentId: text("assignment_id")
     .notNull()
     .references(() => assignmentTable.id),
-  startLongitude: doublePrecision("start_longitude").notNull(),
-  startLatitude: doublePrecision("start_latitude").notNull(),
-  endLongitude: doublePrecision("end_longitude").notNull(),
-  endLatitude: doublePrecision("end_latitude").notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  registrationDate: timestamp("registration_date").notNull(),
-  driveDate: timestamp("drive_date").notNull(),
+  startLongitude: numeric("start_longitude", {
+    precision: 14,
+    scale: 11,
+  }).notNull(),
+  startLatitude: numeric("start_latitude", {
+    precision: 14,
+    scale: 11,
+  }).notNull(),
+  endLongitude: numeric("end_longitude", {
+    precision: 14,
+    scale: 11,
+  }).notNull(),
+  endLatitude: numeric("end_latitude", { precision: 14, scale: 11 }).notNull(),
+  name: text("name").notNull(),
+  driveDate: date("drive_date").notNull(),
   success: boolean("success"),
   problemDescription: text("problem_description"),
   comments: text("comments"),
+  registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
-export const invitationTokenRelations = relations(
-  invitationTokenTable,
-  ({ one }) => {
-    return {
-      user: one(userTable, {
-        fields: [invitationTokenTable.userId],
-        references: [userTable.id],
-      }),
-    };
-  },
-);
+export const invitationRelations = relations(invitationTable, ({ one }) => {
+  return {
+    user: one(userTable, {
+      fields: [invitationTable.userId],
+      references: [userTable.id],
+    }),
+  };
+});
 
 export const assignmentRelations = relations(assignmentTable, ({ one }) => {
   return {

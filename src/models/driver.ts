@@ -19,9 +19,6 @@ export const driverModel = new Elysia({ name: "Model.Driver" }).model({
     licenseNumber: t.String({
       maxLength: 256,
     }),
-    registrationDate: t.String({
-      format: "date",
-    }),
   }),
   "driver.get": t.Object({
     id: t.String(),
