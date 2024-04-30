@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import type { User } from "lucia";
 import { Argon2id } from "oslo/password";
 
+import type { Session } from "lucia";
 import { db } from "../db";
 import { invitationTable, userTable } from "../db/schema";
 import { lucia } from "../utils/auth";
@@ -129,5 +130,9 @@ export abstract class AccountsService {
 
   static async generateUserSession(user: User) {
     return await lucia.createSession(user.id, {});
+  }
+
+  static async deleteSession(session: Session) {
+    return await lucia.invalidateSession(session.id);
   }
 }

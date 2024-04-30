@@ -9,4 +9,4 @@ await db.insert(userTable).values({
   hashedPassword: await new Argon2id().hash("password"),
 });
 
-console.log("Seed data created");
+console.log("Seed data created, you can close this process now.");

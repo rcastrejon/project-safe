@@ -5,8 +5,10 @@ import {
   AccountsService,
   InvalidEmailPasswordError,
 } from "../services/accounts";
+import { authService } from "../services/auth";
 
 export const sessionsController = new Elysia()
+  .use(authService)
   .use(userModel)
   // POST /sign-in
   // Auth: none
@@ -29,4 +31,10 @@ export const sessionsController = new Elysia()
         body.email = body.email?.toLowerCase();
       },
     },
-  );
+  )
+  // POST /logout
+  .post("/logout", async ({ session, error }) => {
+    if (!session) return error(401, { error: "Unauthorized" });
+    await AccountsService.deleteSession(session);
+    return { success: true };
+  });

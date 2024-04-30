@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
 import { assignmentsController } from "./controllers/assignments";
@@ -15,10 +16,21 @@ import { vehiclesController } from "./controllers/vehicles";
 //
 // New controllers can be added by chaining the `.use` method.
 export const api = new Elysia()
+  .use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE"],
+    }),
+  )
   .onError(({ code, error, set }) => {
     if (code === "VALIDATION") {
       set.headers["content-type"] = "application/json";
-      return error.message;
+      const validationErrors = error.all.reduce((acc, x) => {
+        const path = x.path.split("/");
+        acc[path[1]] = x.schema.error;
+        return acc;
+      }, {});
+      return { error: validationErrors };
     }
   })
   .use(helloController)
