@@ -49,7 +49,7 @@ export const driversController = new Elysia({ prefix: "/drivers" })
 
       const driver = await DriverService.getDriverById(id);
       if (!driver) return error(404, { error: "Driver not found" });
-      return { driver };
+      return driver;
     },
     {
       params: "driver.get",
