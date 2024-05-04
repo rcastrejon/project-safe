@@ -123,6 +123,11 @@ export abstract class AccountsService {
       },
     });
   }
+  
+  static async deleteUser(userId: string) {
+    await db.delete(userTable).where(eq(userTable.id, userId));
+    return { message: 'User deleted successfully' };
+  }
 
   /*
    * Session

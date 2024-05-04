@@ -27,4 +27,19 @@ export const usersController = new Elysia({ prefix: "/users" })
     {
       params: "user.get",
     },
+  )
+  .delete(
+    "/:id",
+    async ({ user, params: { id }, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const deletedId = await AccountsService.deleteUser(id);
+        return { id: deletedId };
+      } catch (e) {
+      }
+    },
+    {
+      params: "user.get",
+    },
   );
