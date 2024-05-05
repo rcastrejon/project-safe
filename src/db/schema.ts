@@ -13,13 +13,14 @@ export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   hashedPassword: text("hashed_password").notNull(),
+  registrationDate: timestamp("registration_date").notNull().defaultNow(),
 });
 
 export const sessionTable = pgTable("session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "date",
@@ -30,7 +31,7 @@ export const invitationTable = pgTable("invitation", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
 });
 
 export const vehicleTable = pgTable("vehicle", {

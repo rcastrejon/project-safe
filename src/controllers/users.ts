@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 
 import { userModel } from "../models/user";
-import { AccountsService } from "../services/accounts";
+import { AccountsService, UserNotFoundError } from "../services/accounts";
 import { authService } from "../services/auth";
 
 export const usersController = new Elysia({ prefix: "/users" })
@@ -22,12 +22,13 @@ export const usersController = new Elysia({ prefix: "/users" })
 
       const user = await AccountsService.getUserById(id);
       if (!user) return error(404, { error: "User not found" });
-      return { user };
+      return user;
     },
     {
       params: "user.get",
     },
   )
+  // DELETE /users/:id
   .delete(
     "/:id",
     async ({ user, params: { id }, error }) => {
@@ -37,6 +38,9 @@ export const usersController = new Elysia({ prefix: "/users" })
         const deletedId = await AccountsService.deleteUser(id);
         return { id: deletedId };
       } catch (e) {
+        if (e instanceof UserNotFoundError) {
+          return error(404, { error: "User not found" });
+        }
       }
     },
     {

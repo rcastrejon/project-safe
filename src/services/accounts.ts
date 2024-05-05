@@ -27,6 +27,12 @@ export class EmailInUseError extends Error {
   }
 }
 
+export class UserNotFoundError extends Error {
+  constructor() {
+    super("User not found");
+  }
+}
+
 export abstract class AccountsService {
   /*
    * User account
@@ -123,10 +129,18 @@ export abstract class AccountsService {
       },
     });
   }
-  
+
   static async deleteUser(userId: string) {
-    await db.delete(userTable).where(eq(userTable.id, userId));
-    return { message: 'User deleted successfully' };
+    const [user] = await db
+      .delete(userTable)
+      .where(eq(userTable.id, userId))
+      .returning({
+        deletedId: userTable.id,
+      });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+    return user.deletedId;
   }
 
   /*
