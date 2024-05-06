@@ -28,7 +28,7 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
     },
     {
       body: "assignment.create",
-    },
+    }
   )
   .get("/", async ({ user, error }) => {
     if (!user) return error(401, { error: "Unauthorized" });
@@ -43,11 +43,11 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
 
       const assignment = await AssignmentService.getAssignmentById(id);
       if (!assignment) return error(404, { error: "Assignment not found" });
-      return { assignment };
+      return assignment;
     },
     {
       params: "assignment.get",
-    },
+    }
   )
   .put(
     "/:id",
@@ -72,7 +72,7 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
     {
       body: "assignment.create",
       params: "assignment.get",
-    },
+    }
   )
   .delete(
     "/:id",
@@ -90,5 +90,5 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
     },
     {
       params: "assignment.get",
-    },
+    }
   );
