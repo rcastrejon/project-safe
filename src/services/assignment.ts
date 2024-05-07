@@ -52,14 +52,19 @@ export abstract class AssignmentService {
   }
 
   static async getAllAssignments() {
-    return await db.query.assignmentTable.findMany({
+    const assignments = await db.query.assignmentTable.findMany({
       with: {
         vehicle: true,
         driver: true,
       },
       where: eq(assignmentTable.isActive, true),
     });
-  }
+
+    return assignments.map(assignment => ({
+      ...assignment,
+      labelName: `${assignment.vehicle.make} ${assignment.vehicle.model} - ${assignment.driver.name}`
+    }));
+}
 
   static async updateAssignment(params: {
     id: string;

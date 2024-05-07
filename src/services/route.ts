@@ -26,7 +26,7 @@ export abstract class RouteService {
     endLatitude: string;
     name: string;
     driveDate: string;
-    //success: boolean | null;
+    success: boolean | null;
     problemDescription: string | null;
     comments: string | null;
   }) {
@@ -51,7 +51,6 @@ export abstract class RouteService {
       .insert(routeTable)
       .values({
         id: routeId,
-        success: null,
         ...params,
       })
       .returning();
@@ -67,6 +66,7 @@ export abstract class RouteService {
       with: {
         assignment: {
           columns: { vehicleId: true, driverId: true },
+          with: { vehicle: true, driver: true },
         },
       },
     });

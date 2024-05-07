@@ -11,7 +11,7 @@ export const routeModel = new Elysia({ name: "Model.Route" }).model({
     driveDate: t.String({
       format: "date",
     }),
-    // success: t.Nullable(t.Boolean()),
+    success: t.Nullable(t.Boolean()),
     problemDescription: t.Nullable(t.String()),
     comments: t.Nullable(t.String()),
   }),
