@@ -20,16 +20,18 @@ export class CannotDeleteRouteError extends Error {
 export abstract class RouteService {
   static async createRoute(params: {
     assignmentId: string;
+    startLatitude: string;
+    startLongitude: string;
     endLongitude: string;
     endLatitude: string;
     name: string;
     driveDate: string;
-    success: boolean | null;
+    //success: boolean | null;
     problemDescription: string | null;
     comments: string | null;
   }) {
     const fieldsAreValid = RouteService.validateRouteFields(
-      params.success,
+      //params.success,
       params.problemDescription,
     );
     const assignmentIsValid = await RouteService.validateAssignment(
@@ -49,8 +51,7 @@ export abstract class RouteService {
       .insert(routeTable)
       .values({
         id: routeId,
-        startLatitude: "20.9674", // Static coordinates for now
-        startLongitude: "89.5926", // Static coordinates for now
+        success: null,
         ...params,
       })
       .returning();
@@ -88,6 +89,46 @@ export abstract class RouteService {
     return route;
   }
 
+  static async updateRouteById(
+    id: string,
+    params: {
+      assignmentId: string;
+      startLatitude: string;
+      startLongitude: string;
+      endLongitude: string;
+      endLatitude: string;
+      name: string;
+      driveDate: string;
+      success: boolean | null;
+      problemDescription: string | null;
+      comments: string | null;
+    },
+  ) {
+    const fieldsAreValid = RouteService.validateRouteFields(
+      //params.success,
+      params.problemDescription,
+    );
+    const assignmentIsValid = await RouteService.validateAssignment(
+      params.assignmentId,
+    );
+    const routeIsValid = await RouteService.validateVehicleNotOverlapping(
+      params.driveDate,
+      params.assignmentId,
+    );
+
+    if (!fieldsAreValid || !assignmentIsValid || !routeIsValid) {
+      throw new InvalidRouteError();
+    }
+
+    const [updatedRoute] = await db
+      .update(routeTable)
+      .set(params)
+      .where(eq(routeTable.id, id))
+      .returning();
+
+    return updatedRoute;
+  }
+
   static async deleteRouteById(id: string) {
     const [deletedRoute] = await db
       .delete(routeTable)
@@ -113,13 +154,14 @@ export abstract class RouteService {
    */
 
   private static validateRouteFields(
-    success: boolean | null,
+    //success: boolean | null,
     problemDescription: string | null,
   ) {
     // Either success or problemDescription must be provided
-    if (success === true && problemDescription === null) return true;
-    if (success === false && problemDescription !== null) return true;
-    return false;
+    // if (success === true && problemDescription === null) return true;
+    // if (success === false && problemDescription !== null) return true;
+    // return false;
+    return true;
   }
 
   private static async validateAssignment(assignmentId: string) {

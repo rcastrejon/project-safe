@@ -50,6 +50,26 @@ export const routesController = new Elysia({ prefix: "/routes" })
       params: "route.get",
     },
   )
+  // PUT /routes/:id
+  .put(
+    "/:id",
+    async ({ user, params: { id }, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+
+      try {
+        const deletedId = await RouteService.updateRouteById(id, body);
+        return { id: deletedId };
+      } catch (e) {
+        if (e instanceof CannotDeleteRouteError) {
+          return error(400, { error: e.message });
+        }
+      }
+    },
+    {
+      body: "route.update",
+      params: "route.get",
+    },
+  )
   // DELETE /routes/:id
   .delete(
     "/:id",
