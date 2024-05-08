@@ -34,7 +34,7 @@ export const invitationsController = new Elysia({
 
       const invitation = await InvitationService.getInvitationTokenById(id);
       if (!invitation) return error(404, { error: "Invitation not found" });
-      return { invitation };
+      return invitation;
     },
     {
       params: "invitation.get",
