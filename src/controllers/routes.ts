@@ -44,7 +44,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
 
       const route = await RouteService.getRouteById(id);
       if (route === undefined) return error(404, { error: "Route not found" });
-      return { route };
+      return route;
     },
     {
       params: "route.get",
@@ -54,13 +54,12 @@ export const routesController = new Elysia({ prefix: "/routes" })
   .put(
     "/:id",
     async ({ user, params: { id }, body, error }) => {
-      if (!user) return error(401, { error: "Unauthorized" });
-
+      if (!user) return error(401, { error: "Unauthorized" });      
       try {
-        const deletedId = await RouteService.updateRouteById(id, body);
-        return { id: deletedId };
+        const updatedId = await RouteService.updateRouteById(id, body);
+        return { id: updatedId };
       } catch (e) {
-        if (e instanceof CannotDeleteRouteError) {
+        if (e instanceof InvalidRouteError) {
           return error(400, { error: e.message });
         }
       }

@@ -19,7 +19,6 @@ export const routeModel = new Elysia({ name: "Model.Route" }).model({
     id: t.String(),
   }),
   "route.update": t.Object({
-    id: t.String(),
     assignmentId: t.String(),
     startLatitude: t.String(),
     startLongitude: t.String(),

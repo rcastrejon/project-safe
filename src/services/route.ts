@@ -31,7 +31,7 @@ export abstract class RouteService {
     comments: string | null;
   }) {
     const fieldsAreValid = RouteService.validateRouteFields(
-      //params.success,
+      params.success,
       params.problemDescription,
     );
     const assignmentIsValid = await RouteService.validateAssignment(
@@ -105,21 +105,31 @@ export abstract class RouteService {
     },
   ) {
     const fieldsAreValid = RouteService.validateRouteFields(
-      //params.success,
+      params.success,
       params.problemDescription,
     );
     const assignmentIsValid = await RouteService.validateAssignment(
       params.assignmentId,
     );
-    const routeIsValid = await RouteService.validateVehicleNotOverlapping(
-      params.driveDate,
-      params.assignmentId,
-    );
 
+    const previousRoute = await db.query.routeTable.findFirst({
+      where: eq(routeTable.id, id),
+      with: {
+        assignment: {
+          columns: { id: true },
+        },
+      },
+    });
+    //if the assignment is the same, we don't need to check for overlapping
+    const incomingAssignmentIsSame = previousRoute?.assignment.id === params.assignmentId;
+    
+    let routeIsValid = true;
+    if(!incomingAssignmentIsSame) routeIsValid = await RouteService.validateVehicleNotOverlapping(params.driveDate, params.assignmentId);        
+    
     if (!fieldsAreValid || !assignmentIsValid || !routeIsValid) {
       throw new InvalidRouteError();
     }
-
+    
     const [updatedRoute] = await db
       .update(routeTable)
       .set(params)
@@ -154,14 +164,16 @@ export abstract class RouteService {
    */
 
   private static validateRouteFields(
-    //success: boolean | null,
+    success: boolean | null,
     problemDescription: string | null,
   ) {
     // Either success or problemDescription must be provided
-    // if (success === true && problemDescription === null) return true;
-    // if (success === false && problemDescription !== null) return true;
-    // return false;
-    return true;
+    const problemDescriptionIsEmpty = problemDescription === "" || problemDescription === null;
+    const problemDescriptionIsNotEmpty = problemDescription !== "" && problemDescription !== null;
+
+    if (success === null || success === true) return true;
+    if (success === false && problemDescriptionIsNotEmpty) return true;
+    return false;
   }
 
   private static async validateAssignment(assignmentId: string) {

@@ -54,7 +54,7 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
 
       const vehicle = await VehicleService.getVehicleById(id);
       if (!vehicle) return error(404, { error: "Vehicle not found" });
-      return { vehicle };
+      return vehicle;
     },
     {
       params: "vehicle.get",
