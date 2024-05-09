@@ -18,7 +18,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
 
       try {
         const route = await RouteService.createRoute(body);
-        return { route };
+        return route;
       } catch (e) {
         if (e instanceof InvalidRouteError) {
           return error(400, { error: e.message });
@@ -54,7 +54,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
   .put(
     "/:id",
     async ({ user, params: { id }, body, error }) => {
-      if (!user) return error(401, { error: "Unauthorized" });      
+      if (!user) return error(401, { error: "Unauthorized" });
       try {
         const updatedId = await RouteService.updateRouteById(id, body);
         return { id: updatedId };
