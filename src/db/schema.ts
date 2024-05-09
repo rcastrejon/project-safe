@@ -3,7 +3,6 @@ import {
   boolean,
   date,
   integer,
-  numeric,
   pgTable,
   text,
   timestamp,
@@ -74,19 +73,10 @@ export const routeTable = pgTable("route", {
   assignmentId: text("assignment_id")
     .notNull()
     .references(() => assignmentTable.id),
-  startLongitude: numeric("start_longitude", {
-    precision: 14,
-    scale: 11,
-  }).notNull(),
-  startLatitude: numeric("start_latitude", {
-    precision: 14,
-    scale: 11,
-  }).notNull(),
-  endLongitude: numeric("end_longitude", {
-    precision: 14,
-    scale: 11,
-  }).notNull(),
-  endLatitude: numeric("end_latitude", { precision: 14, scale: 11 }).notNull(),
+  startLongitude: text("start_longitude").notNull(),
+  startLatitude: text("start_latitude").notNull(),
+  endLongitude: text("end_longitude").notNull(),
+  endLatitude: text("end_latitude").notNull(),
   name: text("name").notNull(),
   driveDate: date("drive_date").notNull(),
   success: boolean("success"),

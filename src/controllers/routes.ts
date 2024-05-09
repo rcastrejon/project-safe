@@ -18,7 +18,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
 
       try {
         const route = await RouteService.createRoute(body);
-        return { route };
+        return route;
       } catch (e) {
         if (e instanceof InvalidRouteError) {
           return error(400, { error: e.message });
@@ -44,9 +44,28 @@ export const routesController = new Elysia({ prefix: "/routes" })
 
       const route = await RouteService.getRouteById(id);
       if (route === undefined) return error(404, { error: "Route not found" });
-      return { route };
+      return route;
     },
     {
+      params: "route.get",
+    },
+  )
+  // PUT /routes/:id
+  .put(
+    "/:id",
+    async ({ user, params: { id }, body, error }) => {
+      if (!user) return error(401, { error: "Unauthorized" });
+      try {
+        const updatedId = await RouteService.updateRouteById(id, body);
+        return { id: updatedId };
+      } catch (e) {
+        if (e instanceof InvalidRouteError) {
+          return error(400, { error: e.message });
+        }
+      }
+    },
+    {
+      body: "route.update",
       params: "route.get",
     },
   )

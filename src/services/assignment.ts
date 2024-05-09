@@ -6,7 +6,7 @@ import { newId } from "../utils/ids";
 export class InvalidAssignmentError extends Error {
   constructor() {
     super(
-      "Invalid assignment, make sure the driver and vehicle are valid and that an assignment is not already active"
+      "Invalid assignment, make sure the driver and vehicle are valid and that an assignment is not already active",
     );
   }
 }
@@ -52,13 +52,18 @@ export abstract class AssignmentService {
   }
 
   static async getAllAssignments() {
-    return await db.query.assignmentTable.findMany({
+    const assignments = await db.query.assignmentTable.findMany({
       with: {
         vehicle: true,
         driver: true,
       },
       where: eq(assignmentTable.isActive, true),
     });
+
+    return assignments.map((assignment) => ({
+      ...assignment,
+      labelName: `${assignment.vehicle.make} ${assignment.vehicle.model} - ${assignment.driver.name}`,
+    }));
   }
 
   static async updateAssignment(params: {
@@ -121,7 +126,7 @@ async function validateExists(vehicleId: string, driverId: string) {
 
 async function validateAssignmentAvailability(
   vehicleId: string,
-  driverId: string
+  driverId: string,
 ) {
   // Validate that the assignment is not already active for the vehicle or the
   // driver
@@ -129,12 +134,12 @@ async function validateAssignmentAvailability(
     where: or(
       and(
         eq(assignmentTable.vehicleId, vehicleId),
-        eq(assignmentTable.isActive, true)
+        eq(assignmentTable.isActive, true),
       ),
       and(
         eq(assignmentTable.driverId, driverId),
-        eq(assignmentTable.isActive, true)
-      )
+        eq(assignmentTable.isActive, true),
+      ),
     ),
   });
   return foundAssignment === undefined;
