@@ -31,7 +31,11 @@ export abstract class InvitationService {
   }
 
   static async getAllInvitations() {
-    return await db.query.invitationTable.findMany();
+    return await db.query.invitationTable.findMany({
+      with: {
+        user: true,
+      },
+    });
   }
 
   static async deleteInvitationById(id: string) {

@@ -1,4 +1,4 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, ne, or } from "drizzle-orm";
 import { db } from "../db";
 import { assignmentTable, driverTable, vehicleTable } from "../db/schema";
 import { newId } from "../utils/ids";
@@ -79,7 +79,11 @@ export abstract class AssignmentService {
 
     const [updateValidation, availabilityValidation] = await Promise.all([
       validateExists(params.vehicleId, params.driverId),
-      validateAssignmentAvailability(params.vehicleId, params.driverId),
+      validateAssignmentAvailability(
+        params.vehicleId,
+        params.driverId,
+        params.id,
+      ),
     ]);
 
     if (!updateValidation || !availabilityValidation) {
@@ -127,20 +131,20 @@ async function validateExists(vehicleId: string, driverId: string) {
 async function validateAssignmentAvailability(
   vehicleId: string,
   driverId: string,
+  assignmentId?: string,
 ) {
   // Validate that the assignment is not already active for the vehicle or the
-  // driver
-  const foundAssignment = await db.query.assignmentTable.findFirst({
-    where: or(
-      and(
+  // driver, If an assignmentId is provided, it will be excluded from the query
+  // to allow for updates
+  const existingAssignment = await db.query.assignmentTable.findFirst({
+    where: and(
+      or(
         eq(assignmentTable.vehicleId, vehicleId),
-        eq(assignmentTable.isActive, true),
-      ),
-      and(
         eq(assignmentTable.driverId, driverId),
-        eq(assignmentTable.isActive, true),
       ),
+      eq(assignmentTable.isActive, true),
+      assignmentId ? ne(assignmentTable.id, assignmentId) : undefined,
     ),
   });
-  return foundAssignment === undefined;
+  return !existingAssignment;
 }
