@@ -4,6 +4,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { beforeAll, beforeEach } from "bun:test";
 import { users } from "./fixtures/users";
 import {
+  assignmentTable,
   driverTable,
   invitationTable,
   sessionTable,
@@ -14,6 +15,7 @@ import { invitations } from "./fixtures/invitations";
 import { sessions } from "./fixtures/sessions";
 import { drivers } from "./fixtures/drivers";
 import { vehicles } from "./fixtures/vehicles";
+import { assignments } from "./fixtures/assignments";
 
 beforeAll(async () => {
   await migrate(db, {
@@ -23,7 +25,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await db.execute(
-    sql`TRUNCATE TABLE "user", "invitation", "session", "driver", "vehicle" CASCADE;`,
+    sql`TRUNCATE TABLE "user", "invitation", "session", "driver", "vehicle", "assignment", "route" CASCADE;`,
   );
 
   for (const u of users) {
@@ -40,5 +42,8 @@ beforeEach(async () => {
   }
   for (const v of vehicles) {
     await db.insert(vehicleTable).values(v);
+  }
+  for (const a of assignments) {
+    await db.insert(assignmentTable).values(a);
   }
 });

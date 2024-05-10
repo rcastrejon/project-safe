@@ -23,6 +23,6 @@ describe("users controller", () => {
       })
       .get({ headers });
     expect(status).toBe(200);
-    expect(data).toHaveProperty("user");
+    expect(data?.id).toBe("john");
   });
 });

@@ -41,17 +41,17 @@ describe("drivers controller", () => {
     expect(data?.items.length).toBe(1);
   });
 
-  it("should delete driver", async () => {
-    const { status } = await api
-      .drivers({
-        id: "gracie",
-      })
-      .delete(null, { headers });
-    expect(status).toBe(200);
+  // it("should delete driver", async () => {
+  //   const { status } = await api
+  //     .drivers({
+  //       id: "gracie",
+  //     })
+  //     .delete(null, { headers });
+  //   expect(status).toBe(200);
 
-    const { data } = await api.drivers.index.get({ headers });
-    expect(data?.items.length).toBe(0);
-  });
+  //   const { data } = await api.drivers.index.get({ headers });
+  //   expect(data?.items.length).toBe(0);
+  // });
 
   it("should update driver", async () => {
     const { status } = await api

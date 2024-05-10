@@ -35,7 +35,7 @@ describe("invitations controller", () => {
         headers,
       });
     expect(status).toBe(200);
-    expect(data).toHaveProperty("invitation");
+    expect(data?.id).toBe("valid_invitation");
   });
 
   it("should delete one invitation", async () => {

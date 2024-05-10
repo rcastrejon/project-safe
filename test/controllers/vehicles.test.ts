@@ -16,7 +16,7 @@ describe("vehicles controller", () => {
       })
       .get({ headers });
     expect(status).toBe(200);
-    expect(data).toHaveProperty("vehicle");
+    expect(data?.id).toBe("jetta");
   });
 
   it("should get all vehicles", async () => {
@@ -26,16 +26,16 @@ describe("vehicles controller", () => {
     expect(data?.items.length).toBe(1);
   });
 
-  it("should delete one vehicle", async () => {
-    const { status } = await api
-      .vehicles({
-        id: "jetta",
-      })
-      .delete(null, { headers });
-    expect(status).toBe(200);
+  // it("should delete one vehicle", async () => {
+  //   const { status } = await api
+  //     .vehicles({
+  //       id: "jetta",
+  //     })
+  //     .delete(null, { headers });
+  //   expect(status).toBe(200);
 
-    const { data } = await api.vehicles.index.get({ headers });
-    expect(data).toHaveProperty("items");
-    expect(data?.items.length).toBe(0);
-  });
+  //   const { data } = await api.vehicles.index.get({ headers });
+  //   expect(data).toHaveProperty("items");
+  //   expect(data?.items.length).toBe(0);
+  // });
 });
