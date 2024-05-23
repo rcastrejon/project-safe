@@ -16,12 +16,7 @@ import { vehiclesController } from "./controllers/vehicles";
 //
 // New controllers can be added by chaining the `.use` method.
 export const api = new Elysia()
-  .use(
-    cors({
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE"],
-    }),
-  )
+  .use(cors())
   .onError(({ code, error, set }) => {
     if (code === "VALIDATION") {
       set.headers["content-type"] = "application/json";
