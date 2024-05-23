@@ -3,7 +3,6 @@ import { Elysia } from "elysia";
 
 import { createPinoLogger, pino } from "@bogeychan/elysia-logger";
 import { ecsFormat } from "@elastic/ecs-pino-format";
-import pretty from "pino-pretty";
 import { assignmentsController } from "./controllers/assignments";
 import { driversController } from "./controllers/drivers";
 import { helloController } from "./controllers/hello";
@@ -15,16 +14,9 @@ import { usersController } from "./controllers/users";
 import { vehiclesController } from "./controllers/vehicles";
 import { env } from "./env";
 
-const prettyStream = pretty({
-  colorize: true,
-});
-
 const log = createPinoLogger({
   level: env.LOG_LEVEL,
-  stream: pino.multistream([
-    prettyStream,
-    pino.destination(env.LOG_OUTPUT_PATH),
-  ]),
+  stream: pino.destination(env.LOG_OUTPUT_PATH),
   ...ecsFormat(),
 });
 
