@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.19",
+    "@elastic/ecs-pino-format": "^1.5.0",
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/eden": "^1.0.12",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
