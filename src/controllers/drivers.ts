@@ -24,6 +24,7 @@ export const driversController = new Elysia({ prefix: "/drivers" })
         if (e instanceof InvalidDriverError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -71,6 +72,7 @@ export const driversController = new Elysia({ prefix: "/drivers" })
         if (e instanceof DriverNotFoundError) {
           return error(404, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -95,6 +97,7 @@ export const driversController = new Elysia({ prefix: "/drivers" })
         if (e instanceof DriverNotFoundError) {
           return error(404, { error: "Driver not found" });
         }
+        throw e;
       }
     },
     {

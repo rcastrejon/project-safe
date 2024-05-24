@@ -41,6 +41,7 @@ export const usersController = new Elysia({ prefix: "/users" })
         if (e instanceof UserNotFoundError) {
           return error(404, { error: "User not found" });
         }
+        throw e;
       }
     },
     {

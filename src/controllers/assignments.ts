@@ -67,6 +67,7 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
         if (e instanceof AssignmentNotFoundError) {
           return error(404, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -86,6 +87,7 @@ export const assignmentsController = new Elysia({ prefix: "/assignments" })
         if (e instanceof AssignmentNotFoundError) {
           return error(404, { error: e.message });
         }
+        throw e;
       }
     },
     {

@@ -28,6 +28,7 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
         if (e instanceof FileUploadError) {
           return error(500, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -75,6 +76,7 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
         if (e instanceof VehicleNotFoundError) {
           return error(404, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -99,6 +101,7 @@ export const vehiclesController = new Elysia({ prefix: "/vehicles" })
         if (e instanceof VehicleNotFoundError) {
           return error(404, { error: e.message });
         }
+        throw e;
       }
     },
     {

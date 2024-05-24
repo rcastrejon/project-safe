@@ -23,6 +23,7 @@ export const sessionsController = new Elysia()
         if (e instanceof InvalidEmailPasswordError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {
