@@ -25,6 +25,7 @@ export const registrationsController = new Elysia()
         if (e instanceof EmailInUseError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {

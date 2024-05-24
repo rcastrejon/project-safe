@@ -53,6 +53,7 @@ export const invitationsController = new Elysia({
         if (e instanceof InvitationNotFoundError) {
           return error(404, { error: "Invitation not found" });
         }
+        throw e;
       }
     },
     {

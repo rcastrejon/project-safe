@@ -23,6 +23,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
         if (e instanceof InvalidRouteError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -62,6 +63,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
         if (e instanceof InvalidRouteError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {
@@ -82,6 +84,7 @@ export const routesController = new Elysia({ prefix: "/routes" })
         if (e instanceof CannotDeleteRouteError) {
           return error(400, { error: e.message });
         }
+        throw e;
       }
     },
     {
