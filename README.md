@@ -2,6 +2,10 @@
 
 Sistema de Administración de Flotilla Empresarial (SAFE)
 
+## Architecture diagram
+
+![Architecture diagram](./.github/diagram.jpg)
+
 ## Requirements
 
 - Latest version of [Bun](https://bun.sh/)
