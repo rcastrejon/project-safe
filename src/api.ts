@@ -1,8 +1,6 @@
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
-import { createPinoLogger, pino } from "@bogeychan/elysia-logger";
-import { ecsFormat } from "@elastic/ecs-pino-format";
 import { assignmentsController } from "./controllers/assignments";
 import { driversController } from "./controllers/drivers";
 import { helloController } from "./controllers/hello";
@@ -12,13 +10,7 @@ import { routesController } from "./controllers/routes";
 import { sessionsController } from "./controllers/sessions";
 import { usersController } from "./controllers/users";
 import { vehiclesController } from "./controllers/vehicles";
-import { env } from "./env";
-
-const log = createPinoLogger({
-  level: env.LOG_LEVEL,
-  stream: pino.destination(env.LOG_OUTPUT_PATH),
-  ...ecsFormat(),
-});
+import { log } from "./utils/log";
 
 // The API instance that uses the controllers we have created so far. Every
 // controller here will be mounted on the API instance.

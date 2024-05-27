@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { driverTable } from "../db/schema";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 
 export class InvalidDriverError extends Error {
   constructor() {
@@ -24,6 +25,10 @@ export abstract class DriverService {
     monthlySalary: number;
     licenseNumber: string;
   }) {
+    log.debug({
+      name: "createDriver",
+      params,
+    });
     const driverId = newId("driver");
 
     try {
@@ -44,6 +49,10 @@ export abstract class DriverService {
   }
 
   static async getDriverById(id: string) {
+    log.debug({
+      name: "getDriverById",
+      params: { id },
+    });
     return await db.query.driverTable.findFirst({
       where: eq(driverTable.id, id),
     });
@@ -64,6 +73,10 @@ export abstract class DriverService {
       licenseNumber: string;
     },
   ) {
+    log.debug({
+      name: "updateDriverById",
+      params: { id, ...params },
+    });
     try {
       const [driver] = await db
         .update(driverTable)
@@ -83,6 +96,10 @@ export abstract class DriverService {
   }
 
   static async deleteDriverById(id: string) {
+    log.debug({
+      name: "deleteDriverById",
+      params: { id },
+    });
     const [driver] = await db
       .delete(driverTable)
       .where(eq(driverTable.id, id))

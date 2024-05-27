@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { vehicleTable } from "../db/schema";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 import type { MaybeQueryError } from "../utils/query-helpers";
 import { utapi } from "../utils/uploadthing";
 
@@ -34,6 +35,10 @@ export abstract class VehicleService {
     cost: number;
     photo: File;
   }) {
+    log.debug({
+      name: "createVehicle",
+      params,
+    });
     const vehicleId = newId("vehicle");
 
     const [uploadedFile] = await utapi.uploadFiles([params.photo]);
@@ -65,6 +70,10 @@ export abstract class VehicleService {
   }
 
   static async getVehicleById(id: string) {
+    log.debug({
+      name: "getVehicleById",
+      params: { id },
+    });
     return await db.query.vehicleTable.findFirst({
       where: eq(vehicleTable.id, id),
     });
@@ -85,6 +94,10 @@ export abstract class VehicleService {
       cost: number;
     },
   ) {
+    log.debug({
+      name: "updateVehicleById",
+      params: { id, ...params },
+    });
     try {
       const [vehicle] = await db
         .update(vehicleTable)
@@ -104,6 +117,10 @@ export abstract class VehicleService {
   }
 
   static async deleteVehicleById(id: string) {
+    log.debug({
+      name: "deleteVehicleById",
+      params: { id },
+    });
     const [vehicle] = await db
       .delete(vehicleTable)
       .where(eq(vehicleTable.id, id))

@@ -4,6 +4,7 @@ import type { User } from "lucia";
 import { db } from "../db";
 import { invitationTable } from "../db/schema";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 
 export class InvitationNotFoundError extends Error {
   constructor() {
@@ -13,6 +14,12 @@ export class InvitationNotFoundError extends Error {
 
 export abstract class InvitationService {
   static async createInvitation(user: User) {
+    log.debug({
+      name: "createInvitation",
+      params: {
+        user,
+      },
+    });
     const tokenId = newId("invitation");
     const [invitation] = await db
       .insert(invitationTable)
@@ -25,12 +32,21 @@ export abstract class InvitationService {
   }
 
   static async getInvitationTokenById(id: string) {
+    log.debug({
+      name: "getInvitationTokenById",
+      params: {
+        id,
+      },
+    });
     return await db.query.invitationTable.findFirst({
       where: eq(invitationTable.id, id),
     });
   }
 
   static async getAllInvitations() {
+    log.debug({
+      name: "getAllInvitations",
+    });
     return await db.query.invitationTable.findMany({
       with: {
         user: true,
@@ -39,6 +55,12 @@ export abstract class InvitationService {
   }
 
   static async deleteInvitationById(id: string) {
+    log.debug({
+      name: "deleteInvitationById",
+      params: {
+        id,
+      },
+    });
     const [invitation] = await db
       .delete(invitationTable)
       .where(eq(invitationTable.id, id))

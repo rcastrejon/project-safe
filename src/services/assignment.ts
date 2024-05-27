@@ -2,6 +2,7 @@ import { and, eq, ne, or } from "drizzle-orm";
 import { db } from "../db";
 import { assignmentTable, driverTable, vehicleTable } from "../db/schema";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 
 export class InvalidAssignmentError extends Error {
   constructor() {
@@ -22,6 +23,10 @@ export abstract class AssignmentService {
     vehicleId: string;
     driverId: string;
   }) {
+    log.debug({
+      name: "createAssignment",
+      params,
+    });
     // Create a new assignment, making sure that the vehicle and the driver
     // have not been assigned to another (active) assignment yet
     const [existValidation, availabilityValidation] = await Promise.all([
@@ -46,12 +51,19 @@ export abstract class AssignmentService {
   }
 
   static async getAssignmentById(id: string) {
+    log.debug({
+      name: "getAssignmentById",
+      params: { id },
+    });
     return await db.query.assignmentTable.findFirst({
       where: eq(assignmentTable.id, id),
     });
   }
 
   static async getAllAssignments() {
+    log.debug({
+      name: "getAllAssignments",
+    });
     const assignments = await db.query.assignmentTable.findMany({
       with: {
         vehicle: true,
@@ -71,6 +83,10 @@ export abstract class AssignmentService {
     vehicleId: string;
     driverId: string;
   }) {
+    log.debug({
+      name: "updateAssignment",
+      params,
+    });
     const foundAssignment = await db.query.assignmentTable.findFirst({
       where: eq(assignmentTable.id, params.id),
     });
@@ -103,6 +119,10 @@ export abstract class AssignmentService {
   }
 
   static async deleteAssignment(id: string) {
+    log.debug({
+      name: "deleteAssignment",
+      params: { id },
+    });
     const [deletedAssignment] = await db
       .update(assignmentTable)
       .set({
@@ -118,6 +138,10 @@ export abstract class AssignmentService {
 }
 
 async function validateExists(vehicleId: string, driverId: string) {
+  log.debug({
+    name: "validateExists",
+    params: { vehicleId, driverId },
+  });
   // Validate that the vehicle and the driver exist
   const existingVehicle = await db.query.vehicleTable.findFirst({
     where: eq(vehicleTable.id, vehicleId),
@@ -133,6 +157,10 @@ async function validateAssignmentAvailability(
   driverId: string,
   assignmentId?: string,
 ) {
+  log.debug({
+    name: "validateAssignmentAvailability",
+    params: { vehicleId, driverId, assignmentId },
+  });
   // Validate that the assignment is not already active for the vehicle or the
   // driver, If an assignmentId is provided, it will be excluded from the query
   // to allow for updates

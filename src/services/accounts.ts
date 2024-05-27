@@ -7,6 +7,7 @@ import { db } from "../db";
 import { invitationTable, userTable } from "../db/schema";
 import { lucia } from "../utils/auth";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 import type { MaybeQueryError } from "../utils/query-helpers";
 
 export class InvalidInvitationError extends Error {
@@ -43,6 +44,10 @@ export abstract class AccountsService {
     password: string;
     invitation: string;
   }) {
+    log.debug({
+      name: "registerUser",
+      params,
+    });
     // In order to register a user, we need to check if the invitation is valid
     // and if the email is not already in use.
     //
@@ -90,6 +95,10 @@ export abstract class AccountsService {
     email: string;
     password: string;
   }) {
+    log.debug({
+      name: "fetchUserByEmailPassword",
+      params,
+    });
     // We retrieve the user by email and validate the password using the hashed
     // password column. This function throws an error if the email is not found
     // or if the password is invalid.
@@ -114,6 +123,10 @@ export abstract class AccountsService {
   }
 
   static async getUserById(id: string) {
+    log.debug({
+      name: "getUserById",
+      params: { id },
+    });
     return await db.query.userTable.findFirst({
       where: eq(userTable.id, id),
       columns: {
@@ -123,6 +136,9 @@ export abstract class AccountsService {
   }
 
   static async getAllUsers() {
+    log.debug({
+      name: "getAllUsers",
+    });
     return await db.query.userTable.findMany({
       columns: {
         hashedPassword: false,
@@ -131,6 +147,10 @@ export abstract class AccountsService {
   }
 
   static async deleteUser(userId: string) {
+    log.debug({
+      name: "deleteUser",
+      params: { userId },
+    });
     const [user] = await db
       .delete(userTable)
       .where(eq(userTable.id, userId))
@@ -148,10 +168,18 @@ export abstract class AccountsService {
    */
 
   static async generateUserSession(user: User) {
+    log.debug({
+      name: "generateUserSession",
+      params: { userId: user.id },
+    });
     return await lucia.createSession(user.id, {});
   }
 
   static async deleteSession(session: Session) {
+    log.debug({
+      name: "deleteSession",
+      params: { sessionId: session.id },
+    });
     return await lucia.invalidateSession(session.id);
   }
 }

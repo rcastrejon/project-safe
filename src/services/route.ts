@@ -2,6 +2,7 @@ import { and, eq, gt, ne } from "drizzle-orm";
 import { db } from "../db";
 import { assignmentTable, routeTable } from "../db/schema";
 import { newId } from "../utils/ids";
+import { log } from "../utils/log";
 
 export class InvalidRouteError extends Error {
   constructor() {
@@ -26,6 +27,10 @@ export abstract class RouteService {
     driveDate: string;
     comments?: string;
   }) {
+    log.debug({
+      name: "createRoute",
+      params,
+    });
     const assignmentIsValid = await RouteService.validateAssignment(
       params.assignmentId,
     );
@@ -55,6 +60,9 @@ export abstract class RouteService {
   }
 
   static async getAllRoutes() {
+    log.debug({
+      name: "getAllRoutes",
+    });
     return await db.query.routeTable.findMany({
       columns: {
         assignmentId: false,
@@ -69,6 +77,10 @@ export abstract class RouteService {
   }
 
   static async getRouteById(id: string) {
+    log.debug({
+      name: "getRouteById",
+      params: { id },
+    });
     const route = await db.query.routeTable.findFirst({
       where: eq(routeTable.id, id),
       with: {
@@ -98,6 +110,10 @@ export abstract class RouteService {
       problemDescription: string | null;
     },
   ) {
+    log.debug({
+      name: "updateRouteById",
+      params: { id, ...params },
+    });
     const fieldsAreValid = RouteService.validateRouteFields(
       params.success,
       params.problemDescription,
@@ -129,6 +145,10 @@ export abstract class RouteService {
   }
 
   static async deleteRouteById(id: string) {
+    log.debug({
+      name: "deleteRouteById",
+      params: { id },
+    });
     const [deletedRoute] = await db
       .delete(routeTable)
       .where(
@@ -156,6 +176,10 @@ export abstract class RouteService {
     success: boolean | null,
     problemDescription: string | null,
   ): boolean {
+    log.debug({
+      name: "validateRouteFields",
+      params: { success, problemDescription },
+    });
     // Either success or problemDescription must be provided, but not both
     // If both are null, the route is considered valid.
     if (success === null && problemDescription === null) {
@@ -175,6 +199,10 @@ export abstract class RouteService {
   }
 
   private static async validateAssignment(assignmentId: string) {
+    log.debug({
+      name: "validateAssignment",
+      params: { assignmentId },
+    });
     const activeAssignment = await db.query.assignmentTable.findFirst({
       where: and(
         eq(assignmentTable.id, assignmentId),
@@ -189,6 +217,10 @@ export abstract class RouteService {
     assignmentId: string,
     routeId?: string,
   ) {
+    log.debug({
+      name: "validateVehicleNotOverlapping",
+      params: { driveDate, assignmentId, routeId },
+    });
     // Ensure that the vehicle from the assignment is available
 
     const assignment = await db.query.assignmentTable.findFirst({
