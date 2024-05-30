@@ -15,9 +15,11 @@
     "noEmit": true,
 
     // Best practices
+    "checkJs": true,
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
 
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
